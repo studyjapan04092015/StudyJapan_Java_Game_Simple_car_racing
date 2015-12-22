@@ -686,12 +686,13 @@ public class RacingGame extends Applet implements Runnable {
 		//System.out.println( "show") ;
 		about = new Dialog( parent, "About" );
 	
-		about.setLayout( new GridLayout( 5, 1 ) );
+		about.setLayout( new GridLayout( 6, 1 ) );
 	
-		about.add( new Label( "RacingGame 1.0, Copyright (C) 2001 John S Montgomery (john.montgomery@lineone.net)" ) );
-		about.add( new Label( "RacingGame 1.0 comes with ABSOLUTELY NO WARRANTY" ) );
-		about.add( new Label( "This is free software, and you are welcome to redistribute it under certain conditions" ) );
-		about.add( new Label( "see the source code for more details." ) );
+		about.add( new Label( "RacingGame " ) );
+		about.add( new Label( "This is our project for network programming." ) );
+		about.add( new Label( "Our team:" ) );
+		about.add( new Label( "Đào Duy Nhẫn - 20111939 " ) );
+		about.add( new Label( "Lương Thị Thắm  - " ) );
 		
 		Button ok = new Button( "Ok" );
 		ok.addActionListener( new ActionListener() {

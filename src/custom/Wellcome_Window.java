@@ -24,6 +24,9 @@ import javax.swing.SwingUtilities;
 
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 
+import custom.Register_new_account;
+import source.RacingGame;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ContainerAdapter;
@@ -107,11 +110,10 @@ public class Wellcome_Window extends JDialog {
 				try {
 					conn = connectToDatabase();
 
-					if ( login_info_is_true(conn, (textField.getText()).toString(), (passwordField.getPassword()).toString()) ) {
+					if ( login_info_is_true(conn, textField.getText(), passwordField.getText()) ) {
 						dispose();
 
-						JOptionPane.showMessageDialog(null, "Logged successfully !", "Message",
-								JOptionPane.PLAIN_MESSAGE);
+						RacingGame.main( null );
 					} else {
 						JOptionPane.showMessageDialog(null, "Incorrect User/Password");
 					}
@@ -142,7 +144,13 @@ public class Wellcome_Window extends JDialog {
 		btnSignUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					return;
+					dispose();
+					Register_new_account dialog = new Register_new_account();
+					
+					//dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					
+					dialog.setVisible(true);
+					new Frame().add(dialog, BorderLayout.CENTER);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -176,11 +184,9 @@ public class Wellcome_Window extends JDialog {
 			String querry = "select \"Acc\", \"Pass\" from \"Account\" where \"Acc\" = '" + acc +"';" ;
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(querry);
-			System.out.println( "Info of login session: " + acc + pass);
 			while( rs.next() ) {
 				String pass_result = rs.getString("Pass");
-				System.out.println("Info from server: " +pass_result);
-				if ( !pass_result.equals(pass)){
+				if ( true == pass_result.equals(pass)){
 					rs.close();
 					st.close();
 					
@@ -190,7 +196,6 @@ public class Wellcome_Window extends JDialog {
 			rs.close();
 			st.close();
 		} catch (SQLException se) {
-			System.err.println("Threw a SQLException creating the list of blogs.");
 			System.err.println(se.getMessage());
 		}
 		return false;
