@@ -1,0 +1,54 @@
+version 1.0
+
+straight horiz 832 512
+straight horiz 768 512
+straight horiz 704 512
+corner right top 640 512
+corner left bottom 640 448
+straight horiz 576 448
+straight horiz 512 448
+straight horiz 448 448
+corner right bottom 384 448
+straight vert 384 512
+corner left top 384 576
+straight horiz 320 576
+straight horiz 256 576
+straight horiz 192 576
+straight horiz 128 576
+straight horiz 64 576
+corner right top 0 576
+corner right bottom 0 512
+straight horiz 64 512
+corner left top 128 512
+corner right bottom 128 448
+corner left top 192 448
+corner right bottom 192 384
+corner left top 256 384
+corner right bottom 256 320
+corner left top 320 320
+corner right bottom 320 256
+straight horiz 384 256
+straight horiz 448 256
+straight horiz 512 256
+corner left top 576 256
+straight vert 576 192
+straight vert 576 128
+straight vert 576 64 
+corner right bottom 576 0
+straight horiz 640 0
+straight horiz 704 0
+straight horiz 768 0
+straight horiz 832 0
+straight horiz 896 0
+corner left bottom 960 0
+straight vert 960 64
+straight vert 960 128
+straight vert 960 192
+straight vert 960 256
+corner right top 960 320
+corner left bottom 1024 320
+straight vert 1024 384
+straight vert 1024 448
+corner left top 1024 512
+straight horiz 960 512
+straight horiz 896 512

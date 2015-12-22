@@ -1,0 +1,80 @@
+version 1.0
+
+straight vert 0 832   // start
+straight vert 0 768
+straight vert 0 704
+straight vert 0 640
+straight vert 0 576
+straight vert 0 512
+straight vert 0 448
+straight vert 0 384
+straight vert 0 320
+straight vert 0 256
+corner right bottom 0 192   // corner 1 (hairpin)
+corner left bottom 64 192
+straight vert 64 256
+straight vert 64 320
+corner right top 64 384	   // 2
+straight horiz 128 384
+straight horiz 192 384
+corner left bottom 256 384  // 3
+straight vert 256 448
+straight vert 256 512
+straight vert 256 576
+corner right top 256 640  // 4
+straight horiz 320 640
+straight horiz 384 640
+straight horiz 448 640
+straight horiz 512 640
+straight horiz 576 640
+straight horiz 640 640
+straight horiz 704 640
+corner left top 768 640  // 5
+straight vert 768 576
+straight vert 768 512
+straight vert 768 448
+corner left bottom 768 384  // 6 - begin of c-shape
+straight horiz 704 384
+corner right top 640 384  // 7
+straight vert 640 320
+straight vert 640 256
+corner right bottom 640 192  // 8
+straight horiz 704 192
+corner left top 768 192  // 9
+straight vert 768 128
+straight vert 768 64
+corner left bottom 768 0  // 10 (top right)
+straight horiz 704 0
+straight horiz 640 0
+straight horiz 576 0
+corner right bottom 512 0  // 11
+straight vert 512 64
+straight vert 512 128
+straight vert 512 192
+straight vert 512 256
+straight vert 512 320
+straight vert 512 384
+straight vert 512 448
+corner left top 512 512      // 12 - zigzag
+corner right bottom 448 512  // 13
+straight vert 448 576
+straight vert 448 640  // crossover
+straight vert 448 704
+straight vert 448 768
+straight vert 448 832
+corner left top 448 896  // 14 - bottom of straight
+straight horiz 384 896
+corner right top 320 896    // 15
+corner left bottom 320 832  // 16
+corner right bottom 256 832 // 17
+straight vert 256 896
+corner left top 256 960  // 18
+corner right top 192 960 // 19
+corner left bottom 192 896  // 20
+corner right bottom 128 896 // 21
+straight vert 128 960
+corner left top 128 1024    // 22
+straight horiz 64 1024
+corner right top 0 1024    // 23 and final corner
+straight vert 0 960
+straight vert 0 896  // end of lap

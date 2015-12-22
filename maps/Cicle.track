@@ -1,0 +1,14 @@
+version 1.0
+
+straight vert 192 96
+straight vert 192 160
+corner left top 192 224
+straight horiz 128 224
+straight horiz 64 224
+corner right top 0 224
+straight vert 0 160
+straight vert 0 96
+corner right bottom 0 32
+straight horiz 64 32
+straight horiz 128 32
+corner left bottom 192 32
