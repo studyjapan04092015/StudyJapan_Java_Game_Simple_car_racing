@@ -14,6 +14,9 @@ import javax.lang.model.type.PrimitiveType;
 import javax.xml.stream.events.StartDocument;
 
 import com.sun.javafx.runtime.VersionInfo;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+
+import server_module.game_module.Game;
 
 public class Service {
 	private boolean live;
@@ -53,10 +56,10 @@ public class Service {
 			}
 			inputFromClient = inFromClient.readLine();
 
-			if (inputFromClient.equals("turn off server")) {
+			if (inputFromClient.equals("TURN OFF SERVER")) {
 				turn_off_server();
 			}
-			if (inputFromClient.equals("close socket")) {
+			if (inputFromClient.equals("CLOSE SOCKET")) {
 				close_socket();
 			}
 			if (inputFromClient.equals("LOGIN")) {
@@ -68,6 +71,19 @@ public class Service {
 			if (inputFromClient.equals("REGISTER")) {
 				register_new_account_service();
 			}
+			if (inputFromClient.equals("LIST GAMES")){
+				list_games();
+			}
+			if (inputFromClient.equals("CREATE GAME")){
+				create_new_game();
+			}
+			if (inputFromClient.equals("JOIN GAME")){
+				join_game();
+			}
+			if (inputFromClient.equals("EXIT GAME")){
+				exit_game();
+			}
+			
 		}
 	}
 
@@ -130,10 +146,10 @@ public class Service {
 
 		if (login_info_is_true(user_name, user_pass)) {
 			System.out.println("New user login success");
-			outToClient.writeBytes("login success" + '\n');
+			outToClient.writeBytes("LOGIN SUCCESS" + '\n');
 		} else {
 			System.out.println("New user login failse");
-			outToClient.writeBytes("login false" + '\n');
+			outToClient.writeBytes("LOGIN FAILSE" + '\n');
 		}
 	}
 
@@ -176,4 +192,72 @@ public class Service {
 
 		}
 	}
+	
+	private void list_games() {
+		try {
+			int index_game = 0;
+			int current_games = server_parent.numberGames();
+			
+			while( index_game < current_games) {
+				System.out.println("Say new game");
+				outToClient.writeBytes( "A GAME" + '\n');
+				Game infoGame = server_parent.getGameForDisplayInfoGame(index_game);
+				outToClient.writeBytes( Integer.toString(infoGame.getIdGame()) + '\n');
+				System.out.println(infoGame.getNameOfPrimarryPlayer());
+				outToClient.writeBytes( infoGame.getNameOfPrimarryPlayer() + '\n');
+				outToClient.writeBytes( infoGame.getAddressOfPrimarryPlayer() + '\n');
+				outToClient.writeBytes( infoGame.getMapName()+ '\n');
+				outToClient.writeBytes( Integer.toString(infoGame.getNumberOfPlayerGame()) + '\n');
+				outToClient.writeBytes( Integer.toString(infoGame.getMaxPlayerOfGame()) + '\n');
+				index_game++;
+			}
+			outToClient.writeBytes("END LIST GAMES" + '\n');
+			System.out.println("Say and list game!");
+		} catch (Exception e) {
+		}
+	}
+	
+	private void create_new_game(){
+		try {
+			String primary_player = inFromClient.readLine();
+			String address = inFromClient.readLine();
+			String map = inFromClient.readLine();
+			String maxPlayer = inFromClient.readLine();
+			
+			server_parent.addGame( new Game(primary_player, address, map, Integer.valueOf(maxPlayer)));
+		} catch (Exception e) {
+
+		}
+	}
+	
+	private void join_game(){
+		try {
+			String player = inFromClient.readLine();
+			String address = inFromClient.readLine();
+			int id_game = Integer.parseInt(inFromClient.readLine());
+			
+			Game game_joinning = server_parent.getGame(id_game);
+			game_joinning.addPlayer(player, address);
+			
+		} catch (Exception e) {
+		}
+	}
+	
+	private void exit_game(){
+		try {
+			String typePlayer = inFromClient.readLine();
+			int id_game = Integer.parseInt(inFromClient.readLine());
+			String player = inFromClient.readLine();
+			String addr = inFromClient.readLine();
+			
+			Game game_joinning = server_parent.getGame(id_game);
+			game_joinning.quitPlayer(typePlayer, player, addr);
+			server_parent.checkGameToRemove(game_joinning);
+			
+		} catch (Exception e) {
+		}
+		
+	}
+	
+	
 }
