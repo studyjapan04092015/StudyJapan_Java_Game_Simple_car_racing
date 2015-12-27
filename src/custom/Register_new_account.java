@@ -10,6 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -31,6 +35,7 @@ public class Register_new_account extends JDialog {
 	private JTextField textField;
 	private JPasswordField passwordField;
 	private JPasswordField passwordField_1;
+	private Socket connectionWithServerGame;
 
 	/**
 	 * Launch the application.
@@ -49,8 +54,12 @@ public class Register_new_account extends JDialog {
 	 * Create the dialog.
 	 */
 	public Register_new_account() {
-
 		setTitle("New User Signup");
+		try {
+			connectionWithServerGame = new Socket("localhost", 6789);
+		} catch (Exception e) {
+		}
+
 
 		setBackground(SystemColor.textHighlight);
 		setForeground(SystemColor.textHighlight);
@@ -98,18 +107,25 @@ public class Register_new_account extends JDialog {
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
-						Connection conn = null;
+						String username = textField.getText();
+						String password = passwordField.getText();
+						Boolean status = true;
+						
 						try {
-							conn = connectToDatabase();
-							String username = textField.getText();
-							String password = passwordField.getText();
-							Boolean status = true;
-
+							
+							DataOutputStream outToServer = new DataOutputStream(connectionWithServerGame.getOutputStream());
+							BufferedReader inFromServer = new BufferedReader( new InputStreamReader( connectionWithServerGame.getInputStream()));
+							
 							// Check if user is exist
+							outToServer.writeBytes("REGISTER-REVIEW" + '\n' + username + '\n');
 
-							if ( true == user_is_exist(conn, username)) {
-								 status = false;
+							String replyFromServer = inFromServer.readLine();
+														
+							System.out.println("FROM SERVER: "+ replyFromServer);
+							if ( replyFromServer.equals("user exist")) {
+								status = false;
 							}
+							
 
 							if (status == false) {
 								JOptionPane.showMessageDialog(null, "User available", "Error",
@@ -126,20 +142,22 @@ public class Register_new_account extends JDialog {
 									JOptionPane.showMessageDialog(null, "Password not match", "Error",
 											JOptionPane.PLAIN_MESSAGE);
 								} else {
-									register_user(conn, username, password);
+									outToServer.writeBytes("REGISTER" + '\n' + username + '\n' + password + '\n');
+									outToServer.writeBytes("close socket" + '\n');
+									connectionWithServerGame.close();
 
 									String SMessage = "Signed up successfully";
 
 									JOptionPane.showMessageDialog(null, SMessage, "Message", JOptionPane.PLAIN_MESSAGE);
-									((java.sql.Connection) conn).close();
+
 									dispose();
-									Wellcome_Window Restart_Wellcome = new Wellcome_Window();
+									Wellcome_Window Restart_Wellcome = new Wellcome_Window("Simple Racing Car");
 									Restart_Wellcome.setVisible(true);
 									new Frame().add(Restart_Wellcome, BorderLayout.CENTER);
 								}
 							}
-						} catch (SQLException se) {
-							se.printStackTrace();
+							outToServer.writeBytes("close socket" + '\n');
+							connectionWithServerGame.close();
 						} catch (Exception a) {
 							a.printStackTrace();
 						}
@@ -154,7 +172,7 @@ public class Register_new_account extends JDialog {
 				cancelButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent arg0) {
 						dispose();
-						Wellcome_Window Restart_Wellcome = new Wellcome_Window();
+						Wellcome_Window Restart_Wellcome = new Wellcome_Window("Simple Racing Car");
 						Restart_Wellcome.setVisible(true);
 						new Frame().add(Restart_Wellcome, BorderLayout.CENTER);
 					}
@@ -166,55 +184,4 @@ public class Register_new_account extends JDialog {
 			}
 		}
 	}
-
-	private Connection connectToDatabase() {
-		Connection conn = null;
-		try {
-			Class.forName("org.postgresql.Driver");
-			String url = "jdbc:postgresql://localhost/Car_Racing";
-			conn = DriverManager.getConnection(url, "daoduynhan", "123456hml");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.exit(2);
-		}
-		return conn;
-	}
-
-	private boolean user_is_exist(Connection conn, String acc) {
-		try {
-			String querry = "select \"Acc\", \"Pass\" from \"Account\" where \"Acc\" = '" + acc + "';";
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(querry);
-			System.out.println("Info of login session: " + acc);
-			while (rs.next()) {
-				String user_result = rs.getString("Acc");
-				if ( true == user_result.equals(acc)) {
-					rs.close();
-					st.close();
-
-					return true;
-				}
-			}
-			rs.close();
-			st.close();
-		} catch (SQLException se) {
-			System.err.println("Threw a SQLException creating the list of blogs.");
-			System.err.println(se.getMessage());
-		}
-		return false;
-	}
-	private void register_user(Connection conn, String acc, String pass) {
-		try {
-			String querry = "INSERT INTO \"Account\" ( \"Acc\", \"Pass\") values ('" + acc + "', '" + pass + "'); ";
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(querry);
-		} catch (SQLException se) {
-			System.err.println("Threw a SQLException creating the list of blogs.");
-			System.err.println(se.getMessage());
-		}
-	}
-
 }

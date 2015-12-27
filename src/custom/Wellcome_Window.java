@@ -29,6 +29,10 @@ import source.RacingGame;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.awt.event.ContainerAdapter;
 import java.awt.event.ContainerEvent;
 
@@ -38,33 +42,30 @@ import java.awt.event.ContainerEvent;
  * @author daoduynhan
  *
  */
-public class Wellcome_Window extends JDialog {
+public class Wellcome_Window extends JFrame {
 	private JTextField textField;
 	private JPasswordField passwordField;
-	static JLabel lblWelcome;
+	private JLabel lblWelcome;
+	private Socket connectionWithServerGame;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		final JFrame jframe = new JFrame("Simple Racing car");
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Wellcome_Window frame = new Wellcome_Window();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		Wellcome_Window frame = new Wellcome_Window("Simple Racing Car");
+		frame.setVisible(true);
 	}
 
 	/**
 	 * Create the frame.
 	 */
-	public Wellcome_Window() {
-		// TODO Auto-generated constructor stub
+	public Wellcome_Window( String nameFrame) {
+		super( nameFrame );
+		try {
+			connectionWithServerGame = new Socket("localhost", 6789);
+		} catch (Exception e) {
+		}
+		
 		getContentPane().setForeground(new Color(0, 0, 0));
 		getContentPane().setFont(new Font("Tahoma", Font.BOLD, 13));
 		getContentPane().setBackground(new Color(34, 139, 34));
@@ -104,26 +105,19 @@ public class Wellcome_Window extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				Connection conn;
+
 				Boolean status = false;
 
 				try {
-					conn = connectToDatabase();
-
-					if ( login_info_is_true(conn, textField.getText(), passwordField.getText()) ) {
+					if (login_info_is_true( textField.getText(), passwordField.getText())) {
 						dispose();
 
-						RacingGame.main( null );
+						ViewRooms.main( connectionWithServerGame, textField.getText());
 					} else {
 						JOptionPane.showMessageDialog(null, "Incorrect User/Password");
 					}
-
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(null, e.getMessage());
-					e.printStackTrace();
 				}
-
 			}
 		});
 
@@ -145,12 +139,8 @@ public class Wellcome_Window extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					dispose();
-					Register_new_account dialog = new Register_new_account();
-					
-					//dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					
-					dialog.setVisible(true);
-					new Frame().add(dialog, BorderLayout.CENTER);
+					Register_new_account reg_new_acc = new Register_new_account();
+					reg_new_acc.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -163,40 +153,23 @@ public class Wellcome_Window extends JDialog {
 		getContentPane().add(btnSignUp);
 	}
 
-	private Connection connectToDatabase() {
-		Connection conn = null;
-		try {
-			Class.forName("org.postgresql.Driver");
-			String url = "jdbc:postgresql://localhost/Car_Racing";
-			conn = DriverManager.getConnection(url, "daoduynhan", "123456hml");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.exit(2);
-		}
-		return conn;
-	}
+	private boolean login_info_is_true( String acc, String pass) {
+		String answerFromServer;
 
-	private boolean login_info_is_true(Connection conn, String acc, String pass) {
 		try {
-			String querry = "select \"Acc\", \"Pass\" from \"Account\" where \"Acc\" = '" + acc +"';" ;
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(querry);
-			while( rs.next() ) {
-				String pass_result = rs.getString("Pass");
-				if ( true == pass_result.equals(pass)){
-					rs.close();
-					st.close();
-					
-					return true;
-				}
-			}
-			rs.close();
-			st.close();
-		} catch (SQLException se) {
-			System.err.println(se.getMessage());
+		DataOutputStream outToServer = new DataOutputStream(connectionWithServerGame.getOutputStream());
+		BufferedReader inFromServer = new BufferedReader(
+				new InputStreamReader(connectionWithServerGame.getInputStream()));
+
+		outToServer.writeBytes("LOGIN" + '\n' + acc + '\n' + pass + '\n');
+
+		answerFromServer = inFromServer.readLine();
+
+
+		if (answerFromServer.equals("LOGIN SUCCESS")) {
+			return true;
+		}
+		} catch (Exception e) {
 		}
 		return false;
 	}
